@@ -27,5 +27,5 @@ set(TARGET_BASE "base")
 
 include_directories(${PROJECT_SOURCE_DIR})
 
-add_subdirectory(base)
+add_subdirectory(src)
 add_subdirectory(tests)
