@@ -1,0 +1,148 @@
+#!/usr/bin/python
+
+import os
+import subprocess
+
+def get_user_variables():
+    import getpass, pwd
+    username = getpass.getuser()
+    pw_entry = pwd.getpwnam(username)
+    uid = pw_entry.pw_uid
+    gid = pw_entry.pw_gid
+    return dict(username=username, uid=uid, gid=gid)
+
+class DockerfileBuilder(object):
+    def __init__(self):
+        self.__reset()
+
+    def with_template(self, path):
+        self.__template_path = path
+        return self
+
+    def with_vars(self, variables):
+        self.__variables.update(variables)
+        return self
+
+    def with_output(self, path):
+        self.__output_path = path
+        return self
+
+    def build(self):
+
+        try:
+            contents = self.__read_template()
+            contents = self.__fill_template(contents)
+            self.__write_dockerfile(contents)
+        finally:
+            self.__reset()
+
+        return self.__output_path
+
+    def __read_template(self):
+        with open(self.__template_path) as f:
+            return f.read()
+
+    def __fill_template(self, contents):
+        return contents.format(**self.__variables)
+
+    def __write_dockerfile(self, contents):
+        with open(self.__output_path, 'w') as f:
+            f.writelines(contents)
+
+    def __reset(self):
+        self.__variables = {}
+        self.__template_path = None
+        self.__output_path = None
+
+class Docker(object):
+    def build(self, path, tag=None):
+        command = 'docker build'
+        
+        if tag:
+            command += ' -t %s' % tag
+
+        command += ' "%s"' % path
+
+        self.__call(command)
+
+    def run(self, image, volumes=None): # DEPRECATED
+        command = 'docker run -it --rm'
+        if volumes:
+            command += ''.join([' -v %s ' % volume for volume in volumes])
+        command += ' -e DISPLAY=%s' % os.environ.get('DISPLAY') # FIXME fx this ugliness
+        command += ' %s' % image
+        self.__call(command)
+
+    def __call(self, *args):
+        print args
+        subprocess.call(*args, shell=True)
+
+class DockerContainerBuilder(object):
+    def __init__(self):
+        self.__reset()
+
+    def with_volume(self, host_path, docker_path, read_only = False):
+        volume = '%s:%s' % (host_path, docker_path)
+
+        if read_only:
+            volume += ':ro'
+
+        self.__volumes.append(volume)
+        return self
+
+    def with_interactive(self):
+        self.__interactive = True
+        return self
+
+    def with_tty(self):
+        self.__tty = True
+        return self
+
+    def with_image(self, image):
+        self.__image = image
+        return self
+
+    def with_env(self, name, value):
+        self.__envs.append('%s=%s' % (name, value))
+        return self
+
+    def with_command(self, command):
+        self.__command = command
+        return self
+
+    def run(self, remove_on_exit=True):
+        assert self.__image, "Docker image must be provided"
+
+        command = 'docker run'
+
+        if remove_on_exit:
+            command += ' --rm'
+
+        command += ' --interactive=%d' % self.__boolToInt(self.__interactive)
+        command += ' --tty=%d' % self.__boolToInt(self.__tty)
+        command += ''.join([' --volume %s' % volume for volume in self.__volumes])
+        command += ''.join([' --env %s' % env for env in self.__envs])
+
+        command += ' %s' % self.__image
+
+        if self.__command:
+            command += ' %s' % command
+
+        subprocess.check_call(command, shell=True)
+
+        self.__reset()
+
+    def __reset(self):
+        self.__volumes = []
+        self.__envs = []
+        self.__image = None
+        self.__tty = False
+        self.__interactive = False
+        self.__command = None
+
+    def __boolToInt(self, value):
+        return 1 if value else 0
+
+    def __call(self, *args):
+        print args
+        return 
