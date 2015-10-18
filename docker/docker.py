@@ -3,13 +3,6 @@
 import os
 import subprocess
 
-def get_user_variables():
-    import getpass, pwd
-    username = getpass.getuser()
-    pw_entry = pwd.getpwnam(username)
-    uid = pw_entry.pw_uid
-    gid = pw_entry.pw_gid
-    return dict(username=username, uid=uid, gid=gid)
 
 class DockerfileBuilder(object):
     def __init__(self):
@@ -54,6 +47,16 @@ class DockerfileBuilder(object):
         self.__template_path = None
         self.__output_path = None
 
+class DockerService(object):
+    @staticmethod
+    def is_running():
+        return subprocess.call('service docker status >/dev/null 2>&1', shell=True) == 0
+
+    @staticmethod
+    def start():
+        subprocess.check_call('sudo service docker start', shell=True)
+
+
 class Docker(object):
     def build(self, path, tag=None):
         command = 'docker build'
@@ -90,6 +93,9 @@ class DockerContainerBuilder(object):
         self.__volumes.append(volume)
         return self
 
+    def with_mirror_volume(self, path, read_only = False):
+        return self.with_volume(host_path = path, docker_path = path, read_only = read_only)
+
     def with_interactive(self):
         self.__interactive = True
         return self
@@ -113,7 +119,7 @@ class DockerContainerBuilder(object):
     def run(self, remove_on_exit=True):
         assert self.__image, "Docker image must be provided"
 
-        command = 'docker run'
+        command = 'docker run --privileged'
 
         if remove_on_exit:
             command += ' --rm'

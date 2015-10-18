@@ -17,6 +17,8 @@ RUN apt-get install -y default-jre
 RUN apt-get install -y ubuntu-artwork
 RUN apt-get install -y sudo
 RUN apt-get install -y fonts-droid
+RUN apt-get install -y less
+RUN apt-get install -y libcanberra-gtk-module
 
 # setup Eclipse
 RUN wget http://artfiles.org/eclipse.org//technology/epp/downloads/release/mars/1/eclipse-cpp-mars-1-linux-gtk-x86_64.tar.gz -O /tmp/eclipse.tgz --no-verbose
@@ -24,10 +26,11 @@ RUN tar -C /opt -xzf /tmp/eclipse.tgz
 RUN rm -f /tmp/eclipse.tgz
 RUN ln -s /opt/eclipse/eclipse /usr/local/bin
 
-RUN groupadd --gid {gid} {username}
-RUN useradd --uid {uid} --gid {gid} -G sudo -m {username}
+RUN groupadd --gid {gid} {login}
+RUN useradd --uid {uid} --gid {gid} -G sudo -m {login} --base-dir {home_dir}
+RUN echo "{login} ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/{login}
 
-USER {username}
-WORKDIR /home/{username}
+USER {login}
+WORKDIR /{home_dir}/{login}
 
 CMD /bin/bash
