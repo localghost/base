@@ -71,4 +71,12 @@ BOOST_AUTO_TEST_CASE(TCCallable4)
   BOOST_CHECK_EQUAL(counter, 1);
 }
 
+/// Empty callable.
+BOOST_AUTO_TEST_CASE(TCCallable5)
+{
+  base::callable action;
+
+  BOOST_CHECK(!action);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
