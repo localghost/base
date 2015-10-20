@@ -6,16 +6,15 @@
 #include <base/export.h>
 
 namespace base {
-/// This is a primitive synchronisation mechanism between two threads.
-/// One threads waits on it to be signaled while the other one may signal
-/// it at any given time.
+/// This is a primitive synchronization mechanism between threads.
+/// When a thread signals it all threads that are waiting or it are notified. If the state is not reset than
+/// all subsequent waits will finish instantly.
 class EXPORT_API waitable_event
 {
 public:
   void wait();
   void wait_and_reset();
 
-  /// @warning Only one thread is signaled
   void signal();
 
 private:
