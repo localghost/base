@@ -14,11 +14,12 @@ RUN apt-get install -y libboost-test-dev
 RUN apt-get install -y vim
 RUN apt-get install -y wget
 RUN apt-get install -y default-jre
-RUN apt-get install -y ubuntu-artwork
+#RUN apt-get install -y ubuntu-artwork # disabling due to artifacts while scrolling eclipse editor view
 RUN apt-get install -y sudo
 RUN apt-get install -y fonts-droid
 RUN apt-get install -y less
-RUN apt-get install -y libcanberra-gtk-module
+RUN apt-get install -y gdb
+RUN apt-get install -y git
 
 # setup Eclipse
 RUN wget http://artfiles.org/eclipse.org//technology/epp/downloads/release/mars/1/eclipse-cpp-mars-1-linux-gtk-x86_64.tar.gz -O /tmp/eclipse.tgz --no-verbose

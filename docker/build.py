@@ -2,21 +2,23 @@
 
 import os
 import sys
-import facts
+from facts import get_facts
 import docker
 
 def main():
+    facts = get_facts()
+
     if not docker.DockerService.is_running():
         docker.DockerService.start()
 
     try:
         docker.DockerfileBuilder() \
-            .with_template('./Dockerfile.tpl') \
-            .with_vars(facts.get_facts()['user']) \
-            .with_output('./Dockerfile') \
+            .with_template(os.path.join(facts['project']['path'], 'docker', 'Dockerfile.tpl')) \
+            .with_vars(facts['user']) \
+            .with_output(os.path.join(facts['project']['path'], 'docker', 'Dockerfile')) \
             .build()
 
-        docker.Docker().build(path='./', tag='arwmar/images:base')
+        docker.Docker().build(path=os.path.join(facts['project']['path'], 'docker'), tag='arwmar/images:base')
     finally:
         if os.path.exists('Dockerfile'):
            os.unlink('Dockerfile')

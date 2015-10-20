@@ -104,6 +104,10 @@ class DockerContainerBuilder(object):
         self.__tty = True
         return self
 
+    def with_privileged(self):
+        self.__privileged = True
+        return self
+
     def with_image(self, image):
         self.__image = image
         return self
@@ -119,11 +123,12 @@ class DockerContainerBuilder(object):
     def run(self, remove_on_exit=True):
         assert self.__image, "Docker image must be provided"
 
-        command = 'docker run --privileged'
+        command = 'docker run'
 
         if remove_on_exit:
             command += ' --rm'
 
+        command += ' --privileged=%d' % self.__boolToInt(self.__privileged)
         command += ' --interactive=%d' % self.__boolToInt(self.__interactive)
         command += ' --tty=%d' % self.__boolToInt(self.__tty)
         command += ''.join([' --volume %s' % volume for volume in self.__volumes])
@@ -144,6 +149,7 @@ class DockerContainerBuilder(object):
         self.__image = None
         self.__tty = False
         self.__interactive = False
+        self.__privileged = False
         self.__command = None
 
     def __boolToInt(self, value):
