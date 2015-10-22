@@ -3,7 +3,6 @@
 
 #include <base/callable.h>
 #include <base/export.h>
-#include <base/waitable_event.h>
 
 #include <condition_variable>
 #include <mutex>
@@ -17,7 +16,16 @@ public:
    callable try_pop_back()
    {
       std::unique_lock<std::mutex> lock{mutex_, std::try_to_lock};
-      if (!lock || queue_.empty()) return {};
+      if (!lock || queue_.empty() || quit_) return {};
+      auto result = std::move(queue_.back());
+      queue_.pop_front();
+      return result;
+   }
+
+   callable try_pop_front()
+   {
+      std::unique_lock<std::mutex> lock{mutex_, std::try_to_lock};
+      if (!lock || queue_.empty() || quit_) return {};
       auto result = std::move(queue_.front());
       queue_.pop_front();
       return result;
