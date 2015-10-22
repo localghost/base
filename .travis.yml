@@ -9,4 +9,4 @@ install:
 
 script:
    - echo "`pwd`"
-   - docker run --rm -v `pwd`:/opt/sources/base arwmar/images:base "cd /opt/sources/base && mkdir build && cd build && cmake ../ && make"
+   - docker run --rm -v `pwd`:/opt/sources/base base:travis "cd /opt/sources/base && mkdir build && cd build && cmake ../ && make"
