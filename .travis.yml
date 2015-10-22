@@ -4,17 +4,9 @@ language: cpp
 
 services: docker
 
-addons:
-   apt:
-      packages:
-      - libboost-dev
-      - libboost-system-dev
-      - libboost-filesystem-dev
-      - libboost-test-dev
-      - cmake
-
-before_install:
-   - ./docker/build.py
+install:
+   - docker build -t base:travis -f docker/Dockerfile.travis docker/
 
 script:
+   - echo "`pwd`"
    - docker run --rm -v `pwd`:/opt/sources/base arwmar/images:base "cd /opt/sources/base && mkdir build && cd build && cmake ../ && make"
