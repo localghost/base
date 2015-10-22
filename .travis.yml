@@ -7,6 +7,9 @@ addons:
    apt:
       packages:
       - libboost-dev
+      - libboost-system-dev
+      - libboost-filesystem-dev
+      - libboost-test-dev
       - cmake
 
 before_script:
