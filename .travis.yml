@@ -8,5 +8,4 @@ install:
    - docker build -t base:travis -f docker/Dockerfile.travis docker/
 
 script:
-   - echo "`pwd`"
-   - docker run --rm -v `pwd`:/opt/sources/base base:travis "cd /opt/sources/base && mkdir build && cd build && cmake ../ && make"
+   - docker run --rm -v `pwd`:/opt/sources/base base:travis /bin/bash -c "cd /opt/sources/base && mkdir build && cd build && cmake ../ && make"
