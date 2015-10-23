@@ -7,12 +7,15 @@ namespace base {
 void task_queue::push(timed_task t)
 {
   bool notify = false;
+
   {
     std::lock_guard<std::mutex> guard{lock_};
     queue_.push_back(std::move(t));
     std::push_heap(queue_.begin(), queue_.end());
     notify = queue_.front().when <= high_steady_clock::now();
   }
+
+  // TODO 2015-10-23 Verify that wait_and_pop() cannot throw; if it can then notify_all() should be used
   if (notify)
     cv_.notify_one();
 }
