@@ -9,4 +9,4 @@ install:
 
 script:
    - docker run --rm -v `pwd`:/opt/sources/base arwmar/base:travis
-      /bin/bash -c "cd /opt/sources/base && mkdir build && cd build && cmake ../ && make"
+      /bin/bash -c "cd /opt/sources/base && mkdir build && cd build && cmake ../ && make && ./tests/base/tests-base"
