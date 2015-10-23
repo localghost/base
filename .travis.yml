@@ -2,6 +2,8 @@ sudo: required
 
 services: docker
 
+language: python
+
 install:
    - docker pull arwmar/base:travis
 
