@@ -6,5 +6,5 @@ install:
    - docker pull arwmar/base:travis
 
 script:
-   - docker run --rm -v `pwd`:/opt/sources/base arwmar/base:travis \
+   - docker run --rm -v `pwd`:/opt/sources/base arwmar/base:travis
       /bin/bash -c "cd /opt/sources/base && mkdir build && cd build && cmake ../ && make"
