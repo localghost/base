@@ -1,0 +1,7 @@
+/Debug/
+*.pyc
+build/
+docker/home/
+.settings
+.cproject
+.project
