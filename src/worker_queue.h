@@ -42,6 +42,18 @@ public:
    }
 
    template<typename F>
+   bool try_push_front(F&& f)
+   {
+      {
+         std::unique_lock<std::mutex> lock{mutex_, std::try_to_lock};
+         if (!lock) return false;
+         queue_.emplace_front(std::forward<F>(f));
+      }
+      cv_.notify_one();
+      return true;
+   }
+
+   template<typename F>
    void push_front(F&& f)
    {
       {

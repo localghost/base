@@ -38,6 +38,24 @@ public:
       }
    }
 
+   template<typename F>
+   void post(F&& f)
+   {
+      const size_t current_queue = current_queue_++ % num_workers_;
+
+      for (size_t i = current_queue; i < num_workers_; ++i)
+      {
+         if (queues_[i].try_push_front(std::forward<F>(f))) return;
+      }
+
+      for (size_t i = 0; i < current_queue; ++i)
+      {
+         if (queues_[i].try_push_front(std::forward<F>(f))) return;
+      }
+
+      queues_[current_queue].push_front(std::forward<F>(f));
+   }
+
 private:
    void thread_entry(const size_t index)
    {
@@ -71,6 +89,7 @@ private:
    const size_t num_workers_;
    std::vector<std::thread> threads_;
    std::vector<worker_queue> queues_{num_workers_};
+   std::atomic<size_t> current_queue_{0};
 };
 }
 
