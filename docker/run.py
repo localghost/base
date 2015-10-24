@@ -20,7 +20,7 @@ def main():
     os.system('xhost +')
 
     DockerContainerBuilder() \
-        .with_image('arwmar/images:base') \
+        .with_image('arwmar/base:devel') \
         .with_volume(host_path = facts['project']['path'], docker_path = '/opt/sources/base') \
         .with_volume(host_path = facts['x']['socket_dir'], docker_path = facts['x']['socket_dir']) \
         .with_volume(host_path = facts['project']['docker_workspace_path'], docker_path = os.path.join(facts['user']['home_dir'], facts['user']['login'])) \

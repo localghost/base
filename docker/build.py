@@ -18,7 +18,7 @@ def main():
             .with_output(os.path.join(facts['project']['path'], 'docker', 'Dockerfile')) \
             .build()
 
-        docker.Docker().build(path=os.path.join(facts['project']['path'], 'docker'), tag='arwmar/images:base')
+        docker.Docker().build(path=os.path.join(facts['project']['path'], 'docker'), tag='arwmar/base:devel')
     finally:
         if os.path.exists('Dockerfile'):
            os.unlink('Dockerfile')
