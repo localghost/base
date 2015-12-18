@@ -13,7 +13,11 @@
 #include <base/detail/task.h>
 
 namespace base {
+#ifdef __GNUC__
+enum struct task_error_code : int EXPORT_API
+#else
 enum struct EXPORT_API task_error_code
+#endif
 {
   no_state,
   cancelled,
@@ -21,7 +25,7 @@ enum struct EXPORT_API task_error_code
   already_called,
   handle_already_acquired
 };
-typedef ::boost::error_info<struct EXPORT_API task_error_code_tag, task_error_code> task_error_info;
+typedef ::boost::error_info<struct /* EXPORT_API */ task_error_code_tag, task_error_code> task_error_info;
 EXCEPTION_TYPE(task_error);
 
 template<typename R>
