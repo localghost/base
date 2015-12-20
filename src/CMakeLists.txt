@@ -13,7 +13,10 @@ set(HDRS
    chrono.h
    threadpool.h
    scoped_thread.h
-   worker_queue.h)
+   worker_queue.h
+   compatibility.h
+   export.h
+   inspect.h)
 
 set(SRCS
    exception.cc

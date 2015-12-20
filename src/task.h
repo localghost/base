@@ -13,7 +13,7 @@
 #include <base/detail/task.h>
 
 namespace base {
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__APPLE_CC__)
 enum struct task_error_code : int EXPORT_API
 #else
 enum struct EXPORT_API task_error_code
@@ -25,7 +25,11 @@ enum struct EXPORT_API task_error_code
   already_called,
   handle_already_acquired
 };
+#if defined(__APPLE_CC__)
+typedef ::boost::error_info<struct EXPORT_API task_error_code_tag, task_error_code> task_error_info;
+#else
 typedef ::boost::error_info<struct /* EXPORT_API */ task_error_code_tag, task_error_code> task_error_info;
+#endif
 EXCEPTION_TYPE(task_error);
 
 template<typename R>
